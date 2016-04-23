@@ -114,7 +114,6 @@
 
         </RelativeLayout>
 
-
         <RelativeLayout
             android:id="@+id/detail_cont_delivery_address"
             android:layout_width="match_parent"
@@ -262,6 +261,55 @@
                 android:layout_below="@+id/detail_txt_delivery_state"
                 android:layout_toRightOf="@+id/detail_ic_delivery_state"
                 android:layout_toEndOf="@+id/detail_ic_delivery_state"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/detail_cont_customer_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingLeft="16dp">
+
+            <ImageView
+                android:id="@+id/detail_ic_customer_name"
+                android:layout_width="32dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:tint="@color/colorPrimaryText"
+                android:src="@drawable/ic_person"
+                android:layout_margin="16dp"
+                android:layout_height="32dp" />
+
+            <TextView
+                android:id="@+id/detail_lbl_customer_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorPrimaryText"
+                android:layout_toRightOf="@+id/detail_ic_customer_name"
+                android:layout_toEndOf="@+id/detail_ic_customer_name"
+                android:layout_marginTop="13dp"
+                android:layout_marginBottom="4dp"
+                android:textStyle="bold"
+                android:text="Persona que recibe"/>
+
+            <TextView
+                android:id="@+id/detail_txt_customer_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorSecondaryText"
+                android:layout_toRightOf="@+id/detail_ic_customer_name"
+                android:layout_toEndOf="@+id/detail_ic_customer_name"
+                android:layout_below="@+id/detail_lbl_customer_name" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/colorDivider"
+                android:layout_below="@+id/detail_txt_customer_name"
+                android:layout_toRightOf="@+id/detail_ic_customer_name"
+                android:layout_toEndOf="@+id/detail_ic_customer_name"/>
 
         </RelativeLayout>
 

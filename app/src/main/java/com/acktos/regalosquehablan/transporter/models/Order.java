@@ -25,7 +25,7 @@ public class Order extends BaseModel {
     public static final String KEY_DELIVERY_STATE="deliveryState";
     public static final String KEY_DELIVERY_MESSAGE="delivery_message";
     public static final String KEY_ADDRESS="address";
-    public static final String KEY_CUSTOMER_NAME="customer_name";
+    public static final String KEY_CUSTOMER_NAME="customerName";
     public static final String KEY_CUSTOMER_PHONE="customerPhone";
     public static final String KEY_PRODUCT_IMAGE="productImage";
     public static final String KEY_STATE="state";

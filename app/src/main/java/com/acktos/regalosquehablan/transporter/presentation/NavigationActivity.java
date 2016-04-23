@@ -2,8 +2,10 @@ package com.acktos.regalosquehablan.transporter.presentation;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -20,13 +22,19 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.acktos.regalosquehablan.transporter.R;
 import com.acktos.regalosquehablan.transporter.controllers.BaseController;
 import com.acktos.regalosquehablan.transporter.controllers.TransportersController;
+import com.acktos.regalosquehablan.transporter.gcm.RegistrationIntentService;
 import com.acktos.regalosquehablan.transporter.models.Order;
 import com.acktos.regalosquehablan.transporter.models.Route;
 import com.acktos.regalosquehablan.transporter.models.Transporter;
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 
 public class NavigationActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
@@ -43,6 +51,9 @@ public class NavigationActivity extends AppCompatActivity implements
     //Components
     Transporter transporter;
     TransportersController transportersController;
+
+    //Constants
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
 
     @Override
@@ -79,6 +90,17 @@ public class NavigationActivity extends AppCompatActivity implements
         setMainFragment(routesFragment);
 
         setupHeaderView();
+
+
+        // Register APP to GCM
+        if (checkPlayServices()) {
+            // Start IntentService to register this application with GCM.
+            Intent intent = new Intent(this, RegistrationIntentService.class);
+            startService(intent);
+        }else{
+            Toast.makeText(this,"Este Dispositivo no soporta servicio de notificaciones",Toast.LENGTH_LONG).show();
+        }
+
 
     }
 
@@ -146,7 +168,7 @@ public class NavigationActivity extends AppCompatActivity implements
         }
     }
 
-    @Override
+   /* @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.navigation, menu);
@@ -166,7 +188,7 @@ public class NavigationActivity extends AppCompatActivity implements
         }
 
         return super.onOptionsItemSelected(item);
-    }
+    }*/
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -175,7 +197,25 @@ public class NavigationActivity extends AppCompatActivity implements
         int id = item.getItemId();
 
         if (id == R.id.nav_logout_action) {
-            // Handle the camera action
+
+            MaterialDialog confirmLogoutDialog=new MaterialDialog.Builder(this)
+                    .title(R.string.logout)
+                    .content(R.string.msg_confirm_logout)
+                    .positiveText(R.string.accept)
+                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(@NonNull MaterialDialog materialDialog, @NonNull DialogAction dialogAction) {
+                            Log.i(BaseController.TAG_DEBUG, "entry to logout");
+                            deleteFile(BaseController.FILE_TRANSPORTER_PROFILE);
+                            Intent i=new Intent(NavigationActivity.this,LoginActivity.class);
+                            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(i);
+                            finish();
+
+                        }
+                    })
+                    .show();
+
         } else if (id == R.id.nav_report_action) {
 
         } else if (id == R.id.nav_route_action) {
@@ -209,5 +249,25 @@ public class NavigationActivity extends AppCompatActivity implements
         i.putExtra(Order.KEY_ORDER,order.toString());
         startActivity(i);
 
+    }
+
+    /**
+     * Check the device to make sure it has the Google Play Services APK. If
+     * it doesn't, display a dialog that allows users to download the APK from
+     * the Google Play Store or enable it in the device's system settings.
+     */
+    private boolean checkPlayServices() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            } else {
+                Log.i(BaseController.TAG_DEBUG, "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
     }
 }

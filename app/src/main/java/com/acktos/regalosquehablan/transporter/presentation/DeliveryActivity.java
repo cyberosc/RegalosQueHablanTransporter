@@ -51,6 +51,7 @@ import com.acktos.regalosquehablan.transporter.services.TrackingIntentService;
 import com.acktos.regalosquehablan.transporter.services.UpdateDeliveryStateService;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.fasterxml.jackson.databind.deser.Deserializers;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -74,7 +75,8 @@ public class DeliveryActivity extends AppCompatActivity{
     private static final String CAMERA_DIR = "/dcim/";
 
     //Attributes
-    private String mCurrentPhotoPath;
+    private String temporalPhotoPath;
+    private String finalPhotoPath;
     private String currentSignatureFile;
     private Boolean isSendDeliveryAttempt=false;
     private String personReceivingValue=null;
@@ -181,15 +183,22 @@ public class DeliveryActivity extends AppCompatActivity{
         super.onResume();
         LocalBroadcastManager.getInstance(this)
                 .registerReceiver(mMessageReceiver, new IntentFilter(BaseController.BROADCAST_RESPONSE_DELIVERY));
-        Log.i(BaseController.TAG_DEBUG, "registerBroadcast");
+        Log.i(BaseController.TAG_DEBUG, "registerBroadcast delivery activity");
     }
 
     @Override
     protected void onStop(){
 
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
-        Log.i(BaseController.TAG_DEBUG, "unregister broadcast");
         super.onStop();
+        Log.i(BaseController.TAG_DEBUG, "entry to onStrop");
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+        Log.i(BaseController.TAG_DEBUG, "unregister broadcast delivery activity in OnDestroy");
     }
 
     private void  setupDeliveryStatesSpinner(Spinner spinnerDeliveryStates){
@@ -231,12 +240,12 @@ public class DeliveryActivity extends AppCompatActivity{
 
         try {
             photoFile = setUpPhotoFile();
-            mCurrentPhotoPath = photoFile.getAbsolutePath();
+            temporalPhotoPath = photoFile.getAbsolutePath();
 
         } catch (IOException e) {
             e.printStackTrace();
             photoFile= null;
-            mCurrentPhotoPath = null;
+            temporalPhotoPath = null;
         }
 
 
@@ -249,7 +258,7 @@ public class DeliveryActivity extends AppCompatActivity{
     private File setUpPhotoFile() throws IOException {
 
         File f = createImageFile();
-        mCurrentPhotoPath = f.getAbsolutePath();
+        temporalPhotoPath = f.getAbsolutePath();
 
         return f;
     }
@@ -306,6 +315,8 @@ public class DeliveryActivity extends AppCompatActivity{
 
         Log.i(BaseController.TAG_DEBUG,"entry to onActivityResult");
 
+        Log.i(BaseController.TAG_DEBUG,"temporalPhotoPath:"+finalPhotoPath);
+
         if(requestCode==REQUEST_TAKE_PHOTO){
 
             Log.i(BaseController.TAG_DEBUG, "recognize request tag");
@@ -314,13 +325,14 @@ public class DeliveryActivity extends AppCompatActivity{
 
                 Log.i(BaseController.TAG_DEBUG,"result code is ok");
 
-                if (mCurrentPhotoPath != null) {
+                if (temporalPhotoPath != null) {
 
                     Log.i(BaseController.TAG_DEBUG,"current path is not null");
 
+                    finalPhotoPath=temporalPhotoPath;
                     placePhotoIntoView();
                     galleryAddPic();
-                    //mCurrentPhotoPath = null;
+                    //temporalPhotoPath = null;
                 }
             }
 
@@ -338,7 +350,7 @@ public class DeliveryActivity extends AppCompatActivity{
 		/* Get the size of the image */
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        BitmapFactory.decodeFile(temporalPhotoPath, bmOptions);
         int photoW = bmOptions.outWidth;
         int photoH = bmOptions.outHeight;
 
@@ -354,7 +366,7 @@ public class DeliveryActivity extends AppCompatActivity{
         bmOptions.inPurgeable = true;
 
 		/* Decode the JPEG file into a Bitmap */
-        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        Bitmap bitmap = BitmapFactory.decodeFile(temporalPhotoPath, bmOptions);
 
 		/* Associate the Bitmap to the ImageView */
         imgGiftTestimony.setImageBitmap(bitmap);
@@ -363,7 +375,7 @@ public class DeliveryActivity extends AppCompatActivity{
 
     private void galleryAddPic() {
         Intent mediaScanIntent = new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE");
-        File f = new File(mCurrentPhotoPath);
+        File f = new File(temporalPhotoPath);
         Uri contentUri = Uri.fromFile(f);
         mediaScanIntent.setData(contentUri);
         this.sendBroadcast(mediaScanIntent);
@@ -406,7 +418,8 @@ public class DeliveryActivity extends AppCompatActivity{
 
             generateSignatureBitmap();
 
-
+            //Stop tracking service
+            stopService(new Intent(DeliveryActivity.this,TrackingIntentService.class));
 
             Delivery delivery=new Delivery();
             delivery.setDeliveryNameWhoReceive(personReceivingValue);
@@ -414,7 +427,7 @@ public class DeliveryActivity extends AppCompatActivity{
             delivery.setDeliveryStateId(Integer.toString(deliveryStatusValue));
             delivery.setOrderId(order.getId());
             delivery.setTransporterId(transporter.getId());
-            delivery.setFilePathPhoto(mCurrentPhotoPath);
+            delivery.setFilePathPhoto(finalPhotoPath);
             delivery.setFilePathSignature(currentSignatureFile);
 
             SendDeliveryToBackendService.startSendDelivery(this, delivery.toString());
@@ -511,16 +524,25 @@ public class DeliveryActivity extends AppCompatActivity{
                 .title(R.string.send_info)
                 .content(R.string.plase_wait)
                 .progress(true, 0)
-                .autoDismiss(false)
                 .progressIndeterminateStyle(true)
+                .cancelable(false)
+                .autoDismiss(false)
                 .show();
     }
 
-    private void launchErrorDialog(){
+    private void launchErrorDialog(String code){
+
+        String message;
+
+        if(code.equals(BaseController.ERROR_CODE)){
+            message=getString(R.string.msg_service_unavailable);
+        }else{
+            message=getString(R.string.msg_network_error);
+        }
 
         MaterialDialog errorDialog = new MaterialDialog.Builder(this)
-                .title(R.string.common_google_play_services_network_error_title)
-                .content(R.string.msg_network_error)
+                .title(R.string.error)
+                .content(message)
                 .autoDismiss(false)
                 .positiveText(R.string.accept)
                 .show();
@@ -546,13 +568,14 @@ public class DeliveryActivity extends AppCompatActivity{
 
             if(code.equals(BaseController.SUCCESS_CODE)){
 
-                stopService(new Intent(DeliveryActivity.this,TrackingIntentService.class));
+                //stopService(new Intent(DeliveryActivity.this,TrackingIntentService.class)); // comment for re-location
                 Intent i=new Intent(DeliveryActivity.this,NavigationActivity.class);
                 startActivity(i);
                 finish();
 
             }else{
-                launchErrorDialog();
+                launchErrorDialog(code);
+                stopService(new Intent(DeliveryActivity.this, TrackingIntentService.class));
             }
 
         }

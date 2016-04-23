@@ -29,6 +29,7 @@ public class BaseController {
     public static final String TOKEN="197846643661b7b74eb7db9036c614e6";
     public static final String KEY_ENCRYPT="encrypt";
     public static final String KEY_FIELDS="fields";
+    public static final String KEY_USER_AGENT="user_agent";
 
 
     // Response codes
@@ -46,7 +47,9 @@ public class BaseController {
         TRANSPORTER_LOGIN("http://www.central.acktos.com.co/login_messenger/"),
         GET_ORDERS("http://www.central.acktos.com.co/get_messenger_orders/"),
         GET_ORDERS_TEST("http://www.grafikaenlinea.com/oscar.php"),
-        UPDATE_ORDER_STATE("http://www.central.acktos.com.co/update_order_state/");
+        UPDATE_ORDER_STATE("http://www.central.acktos.com.co/update_order_state/"),
+        REGISTER_GCM_ID("http://www.central.acktos.com.co/update_messenger_mobile_id/");
+
 
         private final String url;
 
@@ -62,13 +65,20 @@ public class BaseController {
     //BROADCAST
     public static final String BROADCAST_RESPONSE_DELIVERY="com.acktos.regalosquehablan.transporter";
 
+    //GCM
+    public static final String SENT_TOKEN_TO_SERVER = "sentTokenToServer";
+    public static final String REGISTRATION_COMPLETE = "registrationComplete";
+    public final static String TOPIC_TRANSPORTERS="transporters";
+
+
+
 
     public static void testServer() {
 
         String responseString;
 
         HttpClient httpclient = new DefaultHttpClient();
-        HttpPost httppost = new HttpPost(API.GET_ORDERS.getUrl());
+        HttpPost httppost = new HttpPost("http://192.34.58.49/assign_service/");
 
         try {
             AndroidMultiPartEntity entity = new AndroidMultiPartEntity(
@@ -89,11 +99,15 @@ public class BaseController {
 
 
 
-            entity.addPart(Delivery.KEY_MESSENGER_ID, new StringBody("1"));
-            encrypt+="1";
+            entity.addPart("id", new StringBody("1"));
+            entity.addPart("car", new StringBody("1"));
+            entity.addPart("service", new StringBody("1"));
 
 
-            entity.addPart(BaseController.KEY_ENCRYPT, new StringBody(Encrypt.md5(encrypt + BaseController.TOKEN)));
+            encrypt+="1"+"2"+"3";
+
+
+            entity.addPart(BaseController.KEY_ENCRYPT, new StringBody(Encrypt.md5(encrypt + "6f0e37c25064fa258b428ebb6cf79553")));
 
             //totalSize = entity.getContentLength();
             httppost.setEntity(entity);

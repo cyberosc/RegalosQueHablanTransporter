@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Transporter</string>
+    <string name="app_name">Mensajero</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_login">Mensajero</string>
 
@@ -18,7 +18,7 @@
     <string name="login">Iniciar Sesión</string>
     <string name="transporter">Transportador</string>
     <string name="regalosquehablan_url">regalosquehablan.com</string>
-    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_maps">Mapa</string>
     <string name="connecting_with_google">Conectando con Google...</string>
     <string name="msg_incorrect_login">Los datos de usuario y contraseña no son correctos.</string>
     <string name="msg_network_error">Ocurrio un error durante la conexión.</string>
@@ -40,7 +40,7 @@
     <string name="hint_delivery_message">Observación de entrega</string>
     <string name="clear">Borrar</string>
     <string name="hint_customer_signature">Firma aquí</string>
-    <string name="send_info">Enviar información</string>
+    <string name="send_info">Enviando información</string>
     <string name="person_receiving">Persona que recibe</string>
     <string name="delivery_details">Detalles de la entrega</string>
     <string name="accept">Aceptar</string>
@@ -56,13 +56,18 @@
     <string name="msg_confirm_start_delivery">Luego de empezar la entrega de este pedido, NO podrá abandonar la app hasta completarlo. ¿Estas seguro de empezar la entrega? </string>
     <string name="prompt_cc">Cédula</string>
     <string name="route">Ruta</string>
+    <string name="msg_confirm_logout">¿Deseas cerrar tu sesión dentro de la aplicación?</string>
+    <string name="msg_service_unavailable">Hubo un error al intentar conectarse con el servicio de entregas.</string>
+    <string name="error">Error</string>
+    <string name="info">INFO</string>
+    <string name="start">INICIAR</string>
 
 
     <string-array name="delivery_states">
-            <item>Exitosa</item>
-            <item>Portería</item>
-            <item>Persona Diferente</item>
-            <item>Imposible</item>
-        </string-array>
+        <item>Exitosa</item>
+        <item>Portería</item>
+        <item>Persona Diferente</item>
+        <item>Imposible</item>
+    </string-array>
 
 </resources>

@@ -59,7 +59,7 @@ public class SendDeliveryToBackendService extends IntentService {
 
             final String deliveryObject = intent.getStringExtra(Delivery.KEY_DELIVERY);
 
-            JSONObject jsonObject= null;
+            JSONObject jsonObject;
             try {
                 jsonObject = new JSONObject(deliveryObject);
                 delivery=new Delivery(jsonObject);
@@ -159,6 +159,8 @@ public class SendDeliveryToBackendService extends IntentService {
 
                 ServerResponse serverResponse=new ServerResponse(responseObject);
                 if(serverResponse.getCode().equals(BaseController.SUCCESS_CODE)){
+
+                    Log.i(BaseController.TAG_DEBUG,"server response to send delivery:"+responseObject);
                     sendBroadcastServerResponse(BaseController.SUCCESS_CODE);
                 }else{
                     sendBroadcastServerResponse(BaseController.FAILED_CODE);
@@ -186,6 +188,8 @@ public class SendDeliveryToBackendService extends IntentService {
         responseIntent.setAction(BaseController.BROADCAST_RESPONSE_DELIVERY);
         responseIntent.putExtra(ServerResponse.KEY_RESPONSE_CODE, code);
         LocalBroadcastManager.getInstance(this).sendBroadcast(responseIntent);
+
+        Log.i(BaseController.TAG_DEBUG,"send broadcast sendDelivery response:"+code);
 
     }
 

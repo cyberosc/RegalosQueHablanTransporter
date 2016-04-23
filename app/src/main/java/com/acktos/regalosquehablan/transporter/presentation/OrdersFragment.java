@@ -27,14 +27,7 @@ import org.json.JSONObject;
 
 import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link com.acktos.regalosquehablan.transporter.presentation.OrdersFragment.OnOrderSelectedListener} interface
- * to handle interaction events.
- * Use the {@link OrdersFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class OrdersFragment extends Fragment implements RoutesAdapter.OnRecyclerViewClickListener {
 
     //Attributes

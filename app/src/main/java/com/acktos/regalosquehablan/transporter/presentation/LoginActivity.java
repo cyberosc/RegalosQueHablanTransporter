@@ -59,7 +59,6 @@ public class LoginActivity extends AppCompatActivity implements
     private View mLoginFormView;
 
     //GOOGLE PLAY SERVICES
-
     private GoogleApiClient mGoogleApiClient;
     // Request code to use when launching the resolution activity
     private static final int REQUEST_RESOLVE_ERROR = 1001;

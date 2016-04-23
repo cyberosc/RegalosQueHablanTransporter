@@ -148,9 +148,12 @@ public class TrackingIntentService extends Service implements
 
     protected void startLocationUpdates() {
 
-        Log.i(BaseController.TAG_DEBUG,"init start location request");
+        Log.i(BaseController.TAG_DEBUG,"entry to setup location request");
         if(mGoogleApiClient.isConnected() && mLocationRequest!=null) {
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+            Log.i(BaseController.TAG_DEBUG, "start location request successfully started");
+        }else{
+            Log.i(BaseController.TAG_DEBUG,"start location request could not start");
         }
     }
 

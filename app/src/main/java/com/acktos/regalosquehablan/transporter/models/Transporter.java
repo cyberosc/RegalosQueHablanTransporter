@@ -21,6 +21,8 @@ public class Transporter extends BaseModel {
     public static final String KEY_PHONE="phone";
     public static final String KEY_CC="cc";
     public static final String KEY_TRANSPORTER_ID="transporter_id";
+    public static final String KEY_MESSENGER_ID="messenger_id";
+    public static final String KEY_MOBILE_ID="mobile_id";
 
     public Transporter(){}
 

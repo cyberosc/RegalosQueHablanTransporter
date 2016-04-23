@@ -86,7 +86,7 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.ViewHolder
 
         viewHolder.orderId.setText(orders.get(i).getReference());
         viewHolder.deliveryState.setText(orders.get(i).getDeliveryState());
-        viewHolder.deliveryDate.setText(DateTimeUtils.toFriendlyDate(orders.get(i).getDeliveryDate()));
+        viewHolder.deliveryDate.setText(orders.get(i).getDeliveryDate());
 
         Picasso.with(context)
                 .load(orders.get(i).getProductImage())
